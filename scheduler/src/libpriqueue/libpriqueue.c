@@ -21,6 +21,7 @@ void priqueue_init(priqueue_t *q, int(*comparer)(const void *, const void *))
 {
 	q->m_size = 0;
 	q->m_front = NULL;
+	q->comparer = &comparer;
 }
 
 
@@ -34,8 +35,8 @@ void priqueue_init(priqueue_t *q, int(*comparer)(const void *, const void *))
 int priqueue_offer(priqueue_t *q, void *ptr)
 {
 	//ptr is expected to be a node
-	node_t newJob;
-	node_t temp = q->m_front;
+	struct _node_t newJob;
+	struct _node_t temp = q->m_front;
 	newJob->job = ptr;
 	if(q->m_front = NULL) {
 	  q->m_front = newJob;
@@ -82,7 +83,7 @@ void *priqueue_peek(priqueue_t *q)
  */
 void *priqueue_poll(priqueue_t *q)
 {
-	node_t* temp;
+	struct _node_t* temp;
 	temp = q->m_front;
 	if (m_front->next == NULL){
 		m_front = NULL;
@@ -105,7 +106,7 @@ void *priqueue_poll(priqueue_t *q)
  */
 void *priqueue_at(priqueue_t *q, int index)
 {
-	node_t* temp = m_front;
+	struct _node_t* temp = m_front;
 	if (index > q->m_size){
 		return NULL;
 	}
@@ -131,8 +132,8 @@ void *priqueue_at(priqueue_t *q, int index)
 int priqueue_remove(priqueue_t *q, void *ptr)
 {
 	int removed = 0;
-	node_t* temp1 = m_front;
-	node_t* temp2 = m_front;
+	struct _node_t* temp1 = m_front;
+	struct _node_t* temp2 = m_front;
 
 	for (int i = 0; i < q->m_size; i++){
 		if (temp1->job == ptr){
@@ -169,15 +170,15 @@ void *priqueue_remove_at(priqueue_t *q, int index)
 	}
 	else{
 		//node trailing temp2
-		node_t* temp1 = m_front;
+		struct _node_t* temp1 = m_front;
 		//nod that will be on the specified value
-		node_t* temp2 = m_front;
+		struct _node_t* temp2 = m_front;
 		for (int i = 0; i < index-1; i++){
 			temp1 = temp1->next;
 		}
 		temp2 = temp1->next;
 		temp1->next  = temp2->next;
-		job_t* job = temp2->job;
+		void* job = temp2->job;
 		temp2 = NULL;
 		return job;
 	}
