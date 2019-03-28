@@ -35,6 +35,7 @@ int priqueue_offer(priqueue_t *q, void *ptr)
 {
 	//ptr is expected to be a node
 	node_t newJob;
+	node_t temp = q->m_front;
 	newJob->job = ptr;
 	if(q->m_front = NULL) {
 	  q->m_front = newJob;
@@ -43,7 +44,10 @@ int priqueue_offer(priqueue_t *q, void *ptr)
 		q->m_front->next = newJob;
 	}
 	else {
-
+		while(temp->next != NULL) {
+		  temp = temp->next;
+		}
+		temp->next = newJob;
   }
 
 	// return -1; default return
@@ -102,7 +106,7 @@ void *priqueue_poll(priqueue_t *q)
 void *priqueue_at(priqueue_t *q, int index)
 {
 	node_t* temp = m_front;
-	if (index > m_size){
+	if (index > q->m_size){
 		return NULL;
 	}
 	else{
@@ -126,14 +130,23 @@ void *priqueue_at(priqueue_t *q, int index)
  */
 int priqueue_remove(priqueue_t *q, void *ptr)
 {
+	int removed = 0;
 	node_t* temp1 = m_front;
 	node_t* temp2 = m_front;
-	for (int i = 0; i < m_size; i++){
-		if (temp1->job == ptr){
 
+	for (int i = 0; i < q->m_size; i++){
+		if (temp1->job == ptr){
+			temp2->next = temp1->next;
+			temp1 = NULL;
+			temp1 = temp2;
+			removed++;
+		}
+		else{
+			temp1 = temp1->next;
+			temp2 = temp2->next;
 		}
 	}
-	return 0;
+	return removed;
 }
 
 
@@ -148,7 +161,27 @@ int priqueue_remove(priqueue_t *q, void *ptr)
  */
 void *priqueue_remove_at(priqueue_t *q, int index)
 {
-	return 0;
+	if (q->m_front == NULL || index > q->m_size){
+		return NULL;
+	}
+	else if (index == 0){
+		return m_front;
+	}
+	else{
+		//node trailing temp2
+		node_t* temp1 = m_front;
+		//nod that will be on the specified value
+		node_t* temp2 = m_front;
+		for (int i = 0; i < index-1; i++){
+			temp1 = temp1->next;
+		}
+		temp2 = temp1->next;
+		temp1->next  = temp2->next;
+		job_t* job = temp2->job;
+		temp2 = NULL;
+		return job;
+	}
+	// return 0;
 }
 
 
@@ -160,7 +193,7 @@ void *priqueue_remove_at(priqueue_t *q, int index)
  */
 int priqueue_size(priqueue_t *q)
 {
-	return 0;
+	return q->m_size;
 }
 
 
