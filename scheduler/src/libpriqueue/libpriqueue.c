@@ -21,6 +21,7 @@ void priqueue_init(priqueue_t *q, int(*comparer)(const void *, const void *))
 {
 	q->m_size = 0;
 	q->m_front = NULL;
+	q->comparer = &comparer;
 }
 
 
