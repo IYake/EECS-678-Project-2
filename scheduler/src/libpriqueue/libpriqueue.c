@@ -19,7 +19,8 @@
  */
 void priqueue_init(priqueue_t *q, int(*comparer)(const void *, const void *))
 {
-
+	q->m_size = 0;
+	q->m_front = NULL;
 }
 
 
@@ -32,7 +33,13 @@ void priqueue_init(priqueue_t *q, int(*comparer)(const void *, const void *))
  */
 int priqueue_offer(priqueue_t *q, void *ptr)
 {
-	return -1;
+	//ptr is expected to be a node
+	node_t newJob;
+	newJob->job = ptr;
+	m_front = newJob;
+	// return -1; default return
+	//might not return 0
+	return 0
 }
 
 
@@ -46,7 +53,8 @@ int priqueue_offer(priqueue_t *q, void *ptr)
  */
 void *priqueue_peek(priqueue_t *q)
 {
-	return NULL;
+	return m_front->job;
+	// return NULL;
 }
 
 
@@ -60,7 +68,15 @@ void *priqueue_peek(priqueue_t *q)
  */
 void *priqueue_poll(priqueue_t *q)
 {
-	return NULL;
+	node_t* temp;
+	temp = q->m_front;
+	if (m_front->next == NULL){
+		m_front = NULL;
+	}
+	else{
+		m_front = m_front->next;
+	}
+	return temp->job;
 }
 
 
@@ -75,7 +91,17 @@ void *priqueue_poll(priqueue_t *q)
  */
 void *priqueue_at(priqueue_t *q, int index)
 {
-	return NULL;
+	node_t* temp = m_front;
+	if (index > m_size){
+		return NULL;
+	}
+	else{
+		for (int i = 0; i < index; i++){
+			temp = temp->next;
+		}
+		return temp->job;
+	}
+	// return NULL;
 }
 
 
@@ -90,6 +116,13 @@ void *priqueue_at(priqueue_t *q, int index)
  */
 int priqueue_remove(priqueue_t *q, void *ptr)
 {
+	node_t* temp1 = m_front;
+	node_t* temp2 = m_front;
+	for (int i = 0; i < m_size; i++){
+		if (temp1->job == ptr){
+			
+		}
+	}
 	return 0;
 }
 
