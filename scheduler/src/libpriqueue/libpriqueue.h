@@ -12,15 +12,16 @@ typedef int (*Comparer) (const void *a, const void *b);
 
 typedef struct _priqueue_t
 {
-  struct _node_t* m_front;
+  struct node_t* m_front;
   int m_size;
-  Comparer comparer;
+  void* comparer;
 
 } priqueue_t;
-typedef struct _node_t
+
+typedef struct node_t
 {
   void* job;
-  struct _node_t* next;
+  void* next;
 } node_t;
 
 void   priqueue_init     (priqueue_t *q, int(*comparer)(const void *, const void *));
