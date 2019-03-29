@@ -25,6 +25,11 @@ void priqueue_init(priqueue_t *q, int(*comparer)(const void *, const void *))
 	q->comparer = comparer;
 }
 
+void node_init(struct node_t* node){
+	node->job = NULL;
+	node->next = NULL;
+}
+
 
 /**
   Inserts the specified element into this priority queue.
@@ -37,20 +42,21 @@ int priqueue_offer(priqueue_t *q, void *ptr)
 {
 	//ptr is expected to be a node
 	if (q->m_front != NULL){
-	node_t* newJob;
+	node_t* newNode = malloc(sizeof(*newNode));
+	node_init(newNode);
 	node_t* temp = q->m_front;
-	newJob->job = ptr;
+	newNode->job = ptr;
 	if(q->m_front == NULL) {
-	  q->m_front = newJob;
+	  q->m_front = newNode;
   }
 	else if(q->m_front->next == NULL) {
-		q->m_front->next = newJob;
+		q->m_front->next = newNode;
 	}
 	else {
 		while(temp->next != NULL) {
 		  temp = temp->next;
 		}
-		temp->next = newJob;
+		temp->next = newNode;
   }
 
 	// return -1; default return
@@ -135,6 +141,7 @@ void *priqueue_at(priqueue_t *q, int index)
  */
 int priqueue_remove(priqueue_t *q, void *ptr)
 {
+	/*Free nodes when removed*/
 	int removed = 0;
 	node_t* temp1 = q->m_front;
 	node_t* temp2 = q->m_front;
@@ -166,6 +173,7 @@ int priqueue_remove(priqueue_t *q, void *ptr)
  */
 void *priqueue_remove_at(priqueue_t *q, int index)
 {
+	/*Free nodes when removed*/
 	if (q->m_front == NULL || index > q->m_size){
 		return NULL;
 	}
@@ -209,5 +217,9 @@ int priqueue_size(priqueue_t *q)
  */
 void priqueue_destroy(priqueue_t *q)
 {
+	/*Free nodes when removed*/
+}
 
+void test_queue(){
+	printf("TESTING");
 }
