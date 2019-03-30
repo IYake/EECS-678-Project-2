@@ -50,13 +50,13 @@ int priqueue_offer(priqueue_t *q, void *ptr)
 	if(q->m_front == NULL) {
 	  q->m_front = newNode;
   }
-	else if (q->comparer (newNode->value, q->m_front) <= 1) {
+	else if (q->comparer (newNode->value, q->m_front) <= 1) { //should this be 1 or 0?
 		q->m_front = newNode;
 		newNode->next = temp;
 		counter++;
 	}
 	else {
-		while (q->comparer (newNode->value, temp->next->value) > 1) {
+		while (temp->next != NULL && q->comparer (newNode->value, temp->next->value) > 1) {
 			temp = temp->next;
 			counter++;
 		}
@@ -105,9 +105,11 @@ void *priqueue_poll(priqueue_t *q)
 	}
 	else if (temp->next == NULL){
 		q->m_front = NULL;
+		q->m_size -= 1;
 	}
 	else{
 		q->m_front = q->m_front->next;
+		q->m_size -= 1;
 	}
 	return temp->value;
 }
@@ -153,19 +155,25 @@ int priqueue_remove(priqueue_t *q, void *ptr)
 	int removed = 0;
 	node_t* temp1 = q->m_front;
 	node_t* temp2 = q->m_front;
-
-	for (int i = 0; i < q->m_size; i++){
-		if (temp1->value == ptr){
-			temp2->next = temp1->next;
-			temp1 = NULL;
-			temp1 = temp2;
+	
+	while (temp1 != NULL){
+		if (*(int*)temp1->value == *(int*)ptr){
+			if (temp1->next == NULL){
+				temp1 = NULL;
+			}
+			else {
+				temp1->next = temp1->next->next;
+				temp1 = temp1->next->next;
+			}
 			removed++;
 		}
 		else{
 			temp1 = temp1->next;
 			temp2 = temp2->next;
+			
 		}
 	}
+	q->m_size -= removed;
 	return removed;
 }
 
