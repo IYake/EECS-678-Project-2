@@ -193,6 +193,7 @@ int scheduler_new_job(int job_number, int time, int running_time, int priority)
  */
 int scheduler_job_finished(int core_id, int job_number, int time)
 {
+	update_time(time);
 	return -1;
 }
 
