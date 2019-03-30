@@ -110,7 +110,9 @@ void *priqueue_poll(priqueue_t *q)
 		q->m_front = q->m_front->next;
 		q->m_size -= 1;
 	}
-	return temp->value;
+	void* tempValue = temp->value;
+	free(temp);
+	return tempValue;
 }
 
 
@@ -166,21 +168,25 @@ int priqueue_remove(priqueue_t *q, void *ptr)
 	//priqueue_print(q);
 	int removed = 0;
 	node_t* temp1 = q->m_front;
-	
+
 	while (q->m_front != NULL && (q->comparer(q->m_front->value,ptr) == 0)){
+		node_t* temp = q->m_front;
 		q->m_front = q->m_front->next;
+		free(temp);
 		removed++;
 	}
-	
+
 	temp1 = q->m_front;
 	while (temp1 != NULL && temp1->next != NULL){
 		if (q->comparer(temp1->next->value, ptr) == 0){
+			node_t* temp2 = temp1->next;
 			temp1->next = temp1->next->next;
+			free(temp2);
 			removed++;
 		}
 		temp1 = temp1->next;
 	}
-	
+
 	q->m_size -= removed;
 	return removed;
 }
@@ -205,7 +211,10 @@ void *priqueue_remove_at(priqueue_t *q, int index)
 	else if (index == 0){
 		temp = q->m_front;
 		q->m_front = q->m_front->next;
-		return temp;
+		q->m_size--;
+		void* tempValue = temp->value;
+		free(temp);
+		return tempValue;
 	}
 	else{
 		node_t* temp1 = q->m_front;
@@ -215,7 +224,10 @@ void *priqueue_remove_at(priqueue_t *q, int index)
 		}
 		temp2 = temp1->next;
 		temp1->next  = temp1->next->next;
-		return temp2;
+		q->m_size--;
+		void* tempValue = temp2->value;
+		free(temp2);
+		return tempValue;
 	}
 }
 
@@ -240,6 +252,20 @@ int priqueue_size(priqueue_t *q)
 void priqueue_destroy(priqueue_t *q)
 {
 	/*Free nodes when removed*/
+	if(q->m_front == NULL) {
+		return;
+	}
+	else {
+		while(q->m_front->next != NULL) {
+			node_t* temp = q->m_front;
+			q->m_front = temp->next;
+			free(temp);
+		}
+		node_t* temp = q->m_front;
+		q->m_front = NULL;
+		free(temp);
+	}
+	return;
 }
 
 void test_queue(){
