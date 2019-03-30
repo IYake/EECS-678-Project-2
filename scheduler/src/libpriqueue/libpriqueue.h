@@ -26,6 +26,8 @@ typedef struct node_t
   node_t* next;
 } node_t;
 
+void priqueue_print(priqueue_t *q);
+
 void   priqueue_init     (priqueue_t *q, int(*comparer)(const void *, const void *));
 
 int    priqueue_offer    (priqueue_t *q, void *ptr);

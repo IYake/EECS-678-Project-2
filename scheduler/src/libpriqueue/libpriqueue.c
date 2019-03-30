@@ -50,13 +50,13 @@ int priqueue_offer(priqueue_t *q, void *ptr)
 	if(q->m_front == NULL) {
 	  q->m_front = newNode;
   }
-	else if (q->comparer (newNode->value, q->m_front) <= 1) { //should this be 1 or 0?
+	else if (q->comparer (newNode->value, q->m_front->value) <= 0) { //should this be 1 or 0?
 		q->m_front = newNode;
 		newNode->next = temp;
 		counter++;
 	}
 	else {
-		while (temp->next != NULL && q->comparer (newNode->value, temp->next->value) > 1) {
+		while (temp->next != NULL && q->comparer (newNode->value, temp->next->value) > 0) {
 			temp = temp->next;
 			counter++;
 		}
@@ -65,7 +65,7 @@ int priqueue_offer(priqueue_t *q, void *ptr)
 		newNode->next = tempNode;
 		counter++;
 	}
-
+	priqueue_print(q);
 	// return -1; default return
 	//might not return 0
 	q->m_size++;
@@ -135,6 +135,19 @@ void *priqueue_at(priqueue_t *q, int index)
 			temp = temp->next;
 		}
 		return temp->value;
+	}
+	// return NULL;
+}
+
+void priqueue_print(priqueue_t *q)
+{
+	node_t* temp = q->m_front;
+	if (q->m_front != NULL){
+		for (int i = 0; i < q->m_size; i++){
+			printf("%d ", *(int*)temp->value);
+			temp = temp->next;
+		}
+		printf("%d\n", *(int*)temp->value);
 	}
 	// return NULL;
 }
