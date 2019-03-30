@@ -8,20 +8,22 @@
   Priqueue Data Structure
 */
 //added this in
+typedef struct node_t node_t;
+
 typedef int (*Comparer) (const void *a, const void *b);
 
 typedef struct _priqueue_t
 {
   struct node_t* m_front;
   int m_size;
-  void* comparer;
+  Comparer comparer;
 
 } priqueue_t;
 
 typedef struct node_t
 {
-  void* job;
-  void* next;
+  void* value;
+  node_t* next;
 } node_t;
 
 void   priqueue_init     (priqueue_t *q, int(*comparer)(const void *, const void *));

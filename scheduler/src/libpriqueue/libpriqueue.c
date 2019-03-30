@@ -17,7 +17,7 @@
   @param comparer a function pointer that compares two elements.
   See also @ref comparer-page
  */
- 
+
 void priqueue_init(priqueue_t *q, int(*comparer)(const void *, const void *))
 {
 	q->m_size = 0;
@@ -26,7 +26,7 @@ void priqueue_init(priqueue_t *q, int(*comparer)(const void *, const void *))
 }
 
 void node_init(struct node_t* node){
-	node->job = NULL;
+	node->value = NULL;
 	node->next = NULL;
 }
 
@@ -41,30 +41,35 @@ void node_init(struct node_t* node){
 int priqueue_offer(priqueue_t *q, void *ptr)
 {
 	//ptr is expected to be a node
-	if (q->m_front != NULL){
 	node_t* newNode = malloc(sizeof(*newNode));
 	node_init(newNode);
 	node_t* temp = q->m_front;
-	newNode->job = ptr;
+	newNode->value = ptr;
+	newNode->next = NULL;
+	int counter = 0;
 	if(q->m_front == NULL) {
 	  q->m_front = newNode;
   }
-	else if(q->m_front->next == NULL) {
-		q->m_front->next = newNode;
+	else if (q->comparer (newNode->value, q->m_front) <= 1) {
+		q->m_front = newNode;
+		newNode->next = temp;
+		counter++;
 	}
 	else {
-		while(temp->next != NULL) {
-		  temp = temp->next;
+		while (q->comparer (newNode->value, temp->next->value) > 1) {
+			temp = temp->next;
+			counter++;
 		}
+		node_t* tempNode = temp->next;
 		temp->next = newNode;
-  }
+		newNode->next = tempNode;
+		counter++;
+	}
 
 	// return -1; default return
 	//might not return 0
 	q->m_size++;
-	return 0; //some random value. Change this later
-	}
-	return 0;
+	return counter;
 }
 
 
@@ -78,7 +83,7 @@ int priqueue_offer(priqueue_t *q, void *ptr)
  */
 void *priqueue_peek(priqueue_t *q)
 {
-	return q->m_front->job;
+	return q->m_front->value;
 	// return NULL;
 }
 
@@ -95,13 +100,16 @@ void *priqueue_poll(priqueue_t *q)
 {
 	node_t* temp;
 	temp = q->m_front;
-	if (q->m_front->next == NULL){
+	if (temp == NULL)	{
+		return(NULL);
+	}
+	else if (temp->next == NULL){
 		q->m_front = NULL;
 	}
 	else{
 		q->m_front = q->m_front->next;
 	}
-	return temp->job;
+	return temp->value;
 }
 
 
@@ -124,7 +132,7 @@ void *priqueue_at(priqueue_t *q, int index)
 		for (int i = 0; i < index; i++){
 			temp = temp->next;
 		}
-		return temp->job;
+		return temp->value;
 	}
 	// return NULL;
 }
@@ -147,7 +155,7 @@ int priqueue_remove(priqueue_t *q, void *ptr)
 	node_t* temp2 = q->m_front;
 
 	for (int i = 0; i < q->m_size; i++){
-		if (temp1->job == ptr){
+		if (temp1->value == ptr){
 			temp2->next = temp1->next;
 			temp1 = NULL;
 			temp1 = temp2;
@@ -190,9 +198,9 @@ void *priqueue_remove_at(priqueue_t *q, int index)
 		}
 		temp2 = temp1->next;
 		temp1->next  = temp2->next;
-		node_t* job = temp2->job;
+		node_t* value = temp2->value;
 		temp2 = NULL;
-		return job;
+		return value;
 	}
 	// return 0;
 }
