@@ -167,14 +167,14 @@ int priqueue_remove(priqueue_t *q, void *ptr)
 	int removed = 0;
 	node_t* temp1 = q->m_front;
 	
-	while (q->m_front != NULL && (q->comparer(q->m_front->value,ptr) == 0)){
+	while (q->m_front != NULL && q->m_front->value == ptr){
 		q->m_front = q->m_front->next;
 		removed++;
 	}
 	
 	temp1 = q->m_front;
 	while (temp1 != NULL && temp1->next != NULL){
-		if (q->comparer(temp1->next->value, ptr) == 0){
+		if (temp1->next->value == ptr){
 			temp1->next = temp1->next->next;
 			removed++;
 		}

@@ -76,6 +76,7 @@ int rr(const void *a, const void *b){
 void scheduler_start_up(int cores, scheme_t scheme)
 {
 	numCores = cores;
+	activeCores = malloc(sizeof(job_t) * cores);
 	for (int i = 0; i < numCores; i++){
 		activeCores[i] = 0;
 	}
@@ -131,6 +132,47 @@ void scheduler_start_up(int cores, scheme_t scheme)
  */
 int scheduler_new_job(int job_number, int time, int running_time, int priority)
 {
+	update_time(time);
+	job_t* job = malloc(sizeof(job_t));
+	job->num = job_number;
+	job->run_time = running_time;
+	job->priority = priority;
+	
+	int core = -1;
+	for (int i = 0; i < numCores; i++){
+	
+		if (activeCores[i] == 0){
+			core = i;
+			break;
+		}
+	}
+	
+	if (core != -1){
+		job->start_time = time;
+		activeCores[core] = job;
+		return core;
+	}
+	
+	if (preemptive){
+		job_t* least_priority_job = job;
+		
+		for (int i = 0; i < numCores; i++){
+			if (queue.comparer(least_priority_job,activeCores[i]) < 0){
+				core = i;
+				least_priority_job = activeCores[i];
+			}
+		}
+		
+		if (core != -1){
+			job->start_time = time;
+			activeCores[core] = job;
+			priqueue_offer(&queue,least_priority_job);
+			return core;
+		}
+	}
+	
+	job->start_time = -1;
+	priqueue_offer(&queue,(void*)job);
 	return -1;
 }
 
@@ -221,7 +263,7 @@ float scheduler_average_response_time()
 */
 void scheduler_clean_up()
 {
-
+	priqueue_destroy(&queue);
 }
 
 
@@ -238,5 +280,22 @@ void scheduler_clean_up()
  */
 void scheduler_show_queue()
 {
+	node_t* temp = queue.m_front;
+	while (temp->next != NULL){
+		job_t* job = temp->value;
+		printf(
+						"Num: %d, Arrival_time: %d, Start_time: %d, Remaining_time: %d, Run_time: %d, Priority: %d\n"
+						,job->num,job->arrival_time,job->start_time,job->remaining_time,job->run_time,job->priority
+					);
+		temp = temp->next;
+	}
+}
 
+void update_time(int time){
+	for (int i = 0; i < numCores; i++){
+		if (activeCores[i] != 0){
+			activeCores[i]->remaining_time -= time - currTime;
+		}
+	}
+	currTime = time;
 }
