@@ -30,25 +30,7 @@ int preemptive;
 int numCores;
 int currTime;
 job_t** activeCores;
-// typedef struct _scheduler_t
-// {
-// 	
-// } _scheduler_t;
 
-
-/**
-  Initalizes the scheduler.
- 
-  Assumptions:
-    - You may assume this will be the first scheduler function called.
-    - You may assume this function will be called once once.
-    - You may assume that cores is a positive, non-zero number.
-    - You may assume that scheme is a valid scheduling scheme.
-
-  @param cores the number of cores that is available by the scheduler. These cores will be known as core(id=0), core(id=1), ..., core(id=cores-1).
-  @param scheme  the scheduling scheme that should be used. This value will be one of the six enum values of scheme_t
-*/
-//FCFS = 0, SJF, PSJF, PRI, PPRI, RR
 int fcfs(const void *a, const void *b){
 	job_t* jobA = (job_t*)a;
 	job_t* jobB = (job_t*)b;
@@ -78,6 +60,19 @@ int rr(const void *a, const void *b){
 	//default return
 	return 0;
 }
+/**
+  Initalizes the scheduler.
+ 
+  Assumptions:
+    - You may assume this will be the first scheduler function called.
+    - You may assume this function will be called once once.
+    - You may assume that cores is a positive, non-zero number.
+    - You may assume that scheme is a valid scheduling scheme.
+
+  @param cores the number of cores that is available by the scheduler. These cores will be known as core(id=0), core(id=1), ..., core(id=cores-1).
+  @param scheme  the scheduling scheme that should be used. This value will be one of the six enum values of scheme_t
+*/
+
 void scheduler_start_up(int cores, scheme_t scheme)
 {
 	numCores = cores;
