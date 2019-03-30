@@ -9,18 +9,30 @@
 #include "../libpriqueue/libpriqueue.h"
 
 
-/**
+/** 
   Stores information making up a job to be scheduled including any statistics.
 
   You may need to define some global variables or a struct to store your job queue elements. 
 */
+priqueue_t queue;
+int preemptive;
+int numCores;
+int currTime;
+
 typedef struct _job_t
 {
-	void* next;
+	int num;
 	int arrival_time;
+	int start_time;
+	int remaining_time;
 	int run_time;
 	int priority;
 } job_t;
+
+// typedef struct _scheduler_t
+// {
+// 	
+// } _scheduler_t;
 
 
 /**
@@ -35,9 +47,59 @@ typedef struct _job_t
   @param cores the number of cores that is available by the scheduler. These cores will be known as core(id=0), core(id=1), ..., core(id=cores-1).
   @param scheme  the scheduling scheme that should be used. This value will be one of the six enum values of scheme_t
 */
+//FCFS = 0, SJF, PSJF, PRI, PPRI, RR
+int fcfs(const void *a, const void *b){
+	job_t* jobA = (job_t*)a;
+	job_t* jobB = (job_t*)b;
+	if (jobA->num == jobB->num){
+		return 0;
+	}
+	return jobA->arrival_time - jobB->arrival_time;
+}
+
+int sjf(const void *a, const void *b){
+	//default return
+	return 0;
+}
+int psjf(const void *a, const void *b){
+	//default return
+	return 0;
+}
+int pri(const void *a, const void *b){
+	//default return
+	return 0;
+}
+int ppri(const void *a, const void *b){
+	//default return
+	return 0;
+}
+int rr(const void *a, const void *b){
+	//default return
+	return 0;
+}
 void scheduler_start_up(int cores, scheme_t scheme)
 {
-
+	numCores = cores;
+	switch(scheme){
+		case FCFS:
+			preemptive = 0;
+			break;
+		case SJF:
+			preemptive = 0;
+			break;
+		case PSJF:
+			preemptive = 1;
+			break;
+		case PRI:
+			preemptive = 0;
+			break;
+		case PPRI:
+			preemptive = 1;
+			break;
+		case RR:
+			preemptive = 0;
+			break;
+	}
 }
 
 

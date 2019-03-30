@@ -37,12 +37,6 @@ int main()
 	priqueue_offer(&q, &values[12]);
 	priqueue_offer(&q, &values[12]);
 	printf("Total elements: %d (expected 5).\n", priqueue_size(&q));
-	/*Our test*/
-	printf("Elements in order queue (expected 12 12 12 13 14): ");
-	for (i = 0; i < priqueue_size(&q); i++)
-		printf("%d ", *((int *)priqueue_at(&q, i)) );
-	printf("\n");
-	/*Our test*/
 	int val = *((int *)priqueue_poll(&q));
 	printf("Top element: %d (expected 12).\n", val);
 	printf("Total elements: %d (expected 4).\n", priqueue_size(&q));

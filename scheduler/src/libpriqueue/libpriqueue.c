@@ -167,14 +167,14 @@ int priqueue_remove(priqueue_t *q, void *ptr)
 	int removed = 0;
 	node_t* temp1 = q->m_front;
 	
-	while (q->m_front != NULL && *(int*)q->m_front->value == *(int*)ptr){
+	while (q->m_front != NULL && (q->comparer(q->m_front->value,ptr) == 0)){
 		q->m_front = q->m_front->next;
 		removed++;
 	}
 	
 	temp1 = q->m_front;
 	while (temp1 != NULL && temp1->next != NULL){
-		if (*(int*)temp1->next->value == *(int*)ptr){
+		if (q->comparer(temp1->next->value, ptr) == 0){
 			temp1->next = temp1->next->next;
 			removed++;
 		}
@@ -205,9 +205,7 @@ void *priqueue_remove_at(priqueue_t *q, int index)
 		return q->m_front;
 	}
 	else{
-		//node trailing temp2
 		node_t* temp1 = q->m_front;
-		//nod that will be on the specified value
 		node_t* temp2 = q->m_front;
 		for (int i = 0; i < index-1; i++){
 			temp1 = temp1->next;
@@ -218,7 +216,6 @@ void *priqueue_remove_at(priqueue_t *q, int index)
 		temp2 = NULL;
 		return value;
 	}
-	// return 0;
 }
 
 
