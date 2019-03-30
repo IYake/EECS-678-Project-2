@@ -65,7 +65,6 @@ int priqueue_offer(priqueue_t *q, void *ptr)
 		newNode->next = tempNode;
 		counter++;
 	}
-	priqueue_print(q);
 	// return -1; default return
 	//might not return 0
 	q->m_size++;
@@ -143,13 +142,12 @@ void priqueue_print(priqueue_t *q)
 {
 	node_t* temp = q->m_front;
 	if (q->m_front != NULL){
-		for (int i = 0; i < q->m_size; i++){
+		while (temp != NULL){
 			printf("%d ", *(int*)temp->value);
 			temp = temp->next;
 		}
-		printf("%d\n", *(int*)temp->value);
+		printf("\n");
 	}
-	// return NULL;
 }
 
 
@@ -165,27 +163,24 @@ void priqueue_print(priqueue_t *q)
 int priqueue_remove(priqueue_t *q, void *ptr)
 {
 	/*Free nodes when removed*/
+	//priqueue_print(q);
 	int removed = 0;
 	node_t* temp1 = q->m_front;
-	node_t* temp2 = q->m_front;
 	
-	while (temp1 != NULL){
-		if (*(int*)temp1->value == *(int*)ptr){
-			if (temp1->next == NULL){
-				temp1 = NULL;
-			}
-			else {
-				temp1->next = temp1->next->next;
-				temp1 = temp1->next->next;
-			}
+	while (q->m_front != NULL && *(int*)q->m_front->value == *(int*)ptr){
+		q->m_front = q->m_front->next;
+		removed++;
+	}
+	
+	temp1 = q->m_front;
+	while (temp1 != NULL && temp1->next != NULL){
+		if (*(int*)temp1->next->value == *(int*)ptr){
+			temp1->next = temp1->next->next;
 			removed++;
 		}
-		else{
-			temp1 = temp1->next;
-			temp2 = temp2->next;
-			
-		}
+		temp1 = temp1->next;
 	}
+	
 	q->m_size -= removed;
 	return removed;
 }
