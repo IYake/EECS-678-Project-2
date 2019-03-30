@@ -14,10 +14,6 @@
 
   You may need to define some global variables or a struct to store your job queue elements. 
 */
-priqueue_t queue;
-int preemptive;
-int numCores;
-int currTime;
 
 typedef struct _job_t
 {
@@ -29,6 +25,11 @@ typedef struct _job_t
 	int priority;
 } job_t;
 
+priqueue_t queue;
+int preemptive;
+int numCores;
+int currTime;
+job_t** activeCores;
 // typedef struct _scheduler_t
 // {
 // 	
@@ -80,23 +81,33 @@ int rr(const void *a, const void *b){
 void scheduler_start_up(int cores, scheme_t scheme)
 {
 	numCores = cores;
+	for (int i = 0; i < numCores; i++){
+		activeCores[i] = 0;
+	}
+	
 	switch(scheme){
 		case FCFS:
+			priqueue_init(&queue,fcfs);
 			preemptive = 0;
 			break;
 		case SJF:
+			priqueue_init(&queue,sjf);
 			preemptive = 0;
 			break;
 		case PSJF:
+			priqueue_init(&queue,psjf);
 			preemptive = 1;
 			break;
 		case PRI:
+			priqueue_init(&queue,pri);
 			preemptive = 0;
 			break;
 		case PPRI:
+			priqueue_init(&queue,ppri);
 			preemptive = 1;
 			break;
 		case RR:
+			priqueue_init(&queue,rr);
 			preemptive = 0;
 			break;
 	}
