@@ -51,12 +51,11 @@ int sjf(const void *a, const void *b){
 	if (jobA->num == jobB->num){
 		return 0;
 	}
-
-	if (jobA->arrival_time == jobB->arrival_time) {
-			return (jobA->run_time - jobB->run_time);
+	if (jobA->run_time != jobB->run_time){
+		return jobA->run_time - jobB->run_time;
 	}
-	else {
-		return (jobA->arrival_time - jobB->arrival_time);
+	else{
+		return jobA->arrival_time - jobB->arrival_time;
 	}
 }
 int psjf(const void *a, const void *b){
