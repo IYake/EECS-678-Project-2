@@ -64,19 +64,48 @@ int psjf(const void *a, const void *b){
 	if (jobA->num == jobB->num){
 		return 0;
 	}
-
+	if (jobA->remaining_time != jobB->remaining_time){
+		return jobA->remaining_time - jobB->remaining_time;
+	}
+	else{
+		return jobA->arrival_time - jobB->arrival_time;
+	}
 }
 int pri(const void *a, const void *b){
-	//default return
+	job_t* jobA = (job_t*)a;
+	job_t* jobB = (job_t*)b;
+	if (jobA->num == jobB->num){
+		return 0;
+	}
+	if (jobA->priority != jobB->priority){
+		return jobA->priority - jobB->priority;
+	}
+	else{
+		return jobA->arrival_time - jobB->arrival_time;
+	}
 	return 0;
 }
 int ppri(const void *a, const void *b){
-	//default return
+	job_t* jobA = (job_t*)a;
+	job_t* jobB = (job_t*)b;
+	if (jobA->num == jobB->num){
+		return 0;
+	}
+	if (jobA->priority != jobB->priority){
+		return jobA->priority - jobB->priority;
+	}
+	else{
+		return jobA->arrival_time - jobB->arrival_time;
+	}
 	return 0;
 }
 int rr(const void *a, const void *b){
-	//default return
-	return 0;
+	job_t* jobA = (job_t*)a;
+	job_t* jobB = (job_t*)b;
+	if (jobA->num == jobB->num){
+		return 0;
+	}
+	return -1;
 }
 /**
   Initalizes the scheduler.
@@ -156,7 +185,7 @@ void scheduler_start_up(int cores, scheme_t scheme)
  */
 int scheduler_new_job(int job_number, int time, int running_time, int priority)
 {
-	update_time(time);
+	update_remaining_time(time);
 	total_jobs++;
 	job_t* job = malloc(sizeof(job_t));
 	job->num = job_number;
@@ -193,6 +222,9 @@ int scheduler_new_job(int job_number, int time, int running_time, int priority)
 
 		if (core != -1){
 			job->start_time = time;
+			if (time == least_priority_job->start_time){
+				least_priority_job->start_time = -1;
+			}
 			activeCores[core] = job;
 			priqueue_offer(&queue,least_priority_job);
 			return core;
@@ -221,7 +253,7 @@ int scheduler_new_job(int job_number, int time, int running_time, int priority)
  */
 int scheduler_job_finished(int core_id, int job_number, int time)
 {
-	update_time(time);
+	update_remaining_time(time);
 
 	job_t* finished_job = activeCores[core_id];
 	waiting_time += time - finished_job->run_time - finished_job->arrival_time;
@@ -260,7 +292,7 @@ int scheduler_job_finished(int core_id, int job_number, int time)
  */
 int scheduler_quantum_expired(int core_id, int time)
 {
-	update_time(time);
+	update_remaining_time(time);
 
 	job_t* job = activeCores[core_id];
 
@@ -274,9 +306,10 @@ int scheduler_quantum_expired(int core_id, int time)
 		}
 
 		activeCores[core_id] = job;
+	
+	
 	}
 	return job->num;
-	return -1;//not sure when to return this
 }
 
 
@@ -315,8 +348,7 @@ float scheduler_average_turnaround_time()
  */
 float scheduler_average_response_time()
 {
-	//not sure about this
-	return (total_jobs > 0 ? response_time/total_jobs : 0.0);;
+		return (total_jobs > 0 ? response_time/total_jobs : 0.0);
 }
 
 
@@ -355,12 +387,14 @@ void scheduler_show_queue()
 	// 					);
 	// 		temp = temp->next;
 	// 	}
-	printf("THINGSINTINSBSIDUFBSDIUFBSD\n");
 	node_t* temp = queue.m_front;
 	if (queue.m_front != NULL){
 		while (temp != NULL){
 			job_t* job = temp->value;
-			printf("Priority: %d ,", job->priority);
+			printf(
+									"Num: %d, Arrival_time: %d, Start_time: %d, Remaining_time: %d, Run_time: %d, Priority: %d\n"
+									,job->num,job->arrival_time,job->start_time,job->remaining_time,job->run_time,job->priority
+								);
 			temp = temp->next;
 		}
 		printf("\n");
@@ -368,7 +402,7 @@ void scheduler_show_queue()
 		
 }
 
-void update_time(int time){
+void update_remaining_time(int time){
 	for (int i = 0; i < numCores; i++){
 		if (activeCores[i] != 0){
 			activeCores[i]->remaining_time -= time - curr_time;
