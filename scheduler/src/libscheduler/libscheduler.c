@@ -306,8 +306,8 @@ int scheduler_quantum_expired(int core_id, int time)
 		}
 
 		activeCores[core_id] = job;
-	
-	
+
+
 	}
 	return job->num;
 }
@@ -360,7 +360,12 @@ float scheduler_average_response_time()
 */
 void scheduler_clean_up()
 {
-	priqueue_destroy(&queue);
+	while (queue.m_size > 0) {
+		job_t* temp = priqueue_poll(&queue);
+		free(temp);
+	}
+
+	//priqueue_destroy(&queue);
 }
 
 
@@ -399,7 +404,7 @@ void scheduler_show_queue()
 		}
 		printf("\n");
 	}
-		
+
 }
 
 void update_remaining_time(int time){
