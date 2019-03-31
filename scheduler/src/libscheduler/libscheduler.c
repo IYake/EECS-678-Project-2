@@ -147,7 +147,10 @@ int scheduler_new_job(int job_number, int time, int running_time, int priority)
 	total_jobs++;
 	job_t* job = malloc(sizeof(job_t));
 	job->num = job_number;
+	job->arrival_time = time;
+	job->start_time = -1;
 	job->run_time = running_time;
+	job->remaining_time = running_time;
 	job->priority = priority;
 	
 	int core = -1;
@@ -208,7 +211,7 @@ int scheduler_job_finished(int core_id, int job_number, int time)
 	update_time(time);
 	
 	job_t* finished_job = activeCores[core_id];
-	waiting_time += time - finished_job->running_time - finished_job->arrival_time;
+	waiting_time += time - finished_job->run_time - finished_job->arrival_time;
 	response_time += finished_job->start_time - finished_job->arrival_time;
 	turnaround_time += time - finished_job->arrival_time;
 	
@@ -299,7 +302,8 @@ float scheduler_average_turnaround_time()
  */
 float scheduler_average_response_time()
 {
-	return 0.0;
+	//not sure about this
+	return (total_jobs > 0 ? response_time/total_jobs : 0.0);;
 }
 
 
@@ -328,15 +332,27 @@ void scheduler_clean_up()
  */
 void scheduler_show_queue()
 {
+	// node_t* temp = priqueue_peek(&queue);
+	// while (temp->next != NULL){
+	// 		job_t* job = temp->value;
+	// 		printf(
+	// 						// "Num: %d, Arrival_time: %d, Start_time: %d, Remaining_time: %d, Run_time: %d, Priority: %d\n"
+	// 						// ,job->num,job->arrival_time,job->start_time,job->remaining_time,job->run_time,job->priority
+	// 						"STUFF"
+	// 					);
+	// 		temp = temp->next;
+	// 	}
+	printf("THINGSINTINSBSIDUFBSDIUFBSD\n");
 	node_t* temp = queue.m_front;
-	while (temp->next != NULL){
-		job_t* job = temp->value;
-		printf(
-						"Num: %d, Arrival_time: %d, Start_time: %d, Remaining_time: %d, Run_time: %d, Priority: %d\n"
-						,job->num,job->arrival_time,job->start_time,job->remaining_time,job->run_time,job->priority
-					);
-		temp = temp->next;
+	if (queue.m_front != NULL){
+		while (temp != NULL){
+			job_t* job = temp->value;
+			printf("Priority: %d ,", job->priority);
+			temp = temp->next;
+		}
+		printf("\n");
 	}
+		
 }
 
 void update_time(int time){
