@@ -28,7 +28,12 @@ typedef struct _job_t
 priqueue_t queue;
 int preemptive;
 int numCores;
-int currTime;
+int currTime;//maybe this should be float
+int total_jobs;
+float waiting_time;
+float response_time;
+float turnaround_time;
+
 job_t** activeCores;
 
 int fcfs(const void *a, const void *b){
@@ -76,6 +81,10 @@ int rr(const void *a, const void *b){
 void scheduler_start_up(int cores, scheme_t scheme)
 {
 	numCores = cores;
+	total_jobs = 0;
+	waiting_time = 0.0;
+	turnaround_time = 0.0;
+	response_time = 0.0;
 	activeCores = malloc(sizeof(job_t) * cores);
 	for (int i = 0; i < numCores; i++){
 		activeCores[i] = 0;
@@ -133,6 +142,7 @@ void scheduler_start_up(int cores, scheme_t scheme)
 int scheduler_new_job(int job_number, int time, int running_time, int priority)
 {
 	update_time(time);
+	total_jobs++;
 	job_t* job = malloc(sizeof(job_t));
 	job->num = job_number;
 	job->run_time = running_time;
@@ -194,6 +204,7 @@ int scheduler_new_job(int job_number, int time, int running_time, int priority)
 int scheduler_job_finished(int core_id, int job_number, int time)
 {
 	update_time(time);
+	
 	return -1;
 }
 
@@ -213,7 +224,23 @@ int scheduler_job_finished(int core_id, int job_number, int time)
  */
 int scheduler_quantum_expired(int core_id, int time)
 {
-	return -1;
+	update_time(time);
+	
+	job_t* job = activeCores[core_id];
+	
+	if (queue.m_front != NULL){
+		
+		priqueue_offer(&queue,job);
+		job = priqueue_poll(&queue);
+		
+		if (job->start_time == -1){
+			job->start_time = time;
+		}
+		
+		activeCores[core_id] = job;
+	}
+	return job->num;
+	return -1;//not sure when to return this
 }
 
 
@@ -226,7 +253,7 @@ int scheduler_quantum_expired(int core_id, int time)
  */
 float scheduler_average_waiting_time()
 {
-	return 0.0;
+	return (total_jobs > 0 ? waiting_time/total_jobs : 0.0);
 }
 
 
@@ -239,7 +266,7 @@ float scheduler_average_waiting_time()
  */
 float scheduler_average_turnaround_time()
 {
-	return 0.0;
+	return (total_jobs > 0 ? turnaround_time/total_jobs : 0.0);
 }
 
 
