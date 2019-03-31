@@ -105,7 +105,7 @@ int rr(const void *a, const void *b){
 	if (jobA->num == jobB->num){
 		return 0;
 	}
-	return -1;
+	return 1;
 }
 /**
   Initalizes the scheduler.
@@ -293,11 +293,10 @@ int scheduler_job_finished(int core_id, int job_number, int time)
 int scheduler_quantum_expired(int core_id, int time)
 {
 	update_remaining_time(time);
-
 	job_t* job = activeCores[core_id];
 
 	if (queue.m_front != NULL){
-
+		
 		priqueue_offer(&queue,job);
 		job = priqueue_poll(&queue);
 
@@ -307,9 +306,9 @@ int scheduler_quantum_expired(int core_id, int time)
 
 		activeCores[core_id] = job;
 	
-	
 	}
 	return job->num;
+	
 }
 
 
@@ -377,16 +376,6 @@ void scheduler_clean_up()
  */
 void scheduler_show_queue()
 {
-	// node_t* temp = priqueue_peek(&queue);
-	// while (temp->next != NULL){
-	// 		job_t* job = temp->value;
-	// 		printf(
-	// 						// "Num: %d, Arrival_time: %d, Start_time: %d, Remaining_time: %d, Run_time: %d, Priority: %d\n"
-	// 						// ,job->num,job->arrival_time,job->start_time,job->remaining_time,job->run_time,job->priority
-	// 						"STUFF"
-	// 					);
-	// 		temp = temp->next;
-	// 	}
 	node_t* temp = queue.m_front;
 	if (queue.m_front != NULL){
 		while (temp != NULL){
