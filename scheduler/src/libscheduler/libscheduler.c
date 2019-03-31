@@ -28,7 +28,7 @@ typedef struct _job_t
 priqueue_t queue;
 int preemptive;
 int numCores;
-int currTime;//maybe this should be float
+int curr_time;//maybe this should be float
 int total_jobs;
 float waiting_time;
 float response_time;
@@ -85,6 +85,8 @@ void scheduler_start_up(int cores, scheme_t scheme)
 	waiting_time = 0.0;
 	turnaround_time = 0.0;
 	response_time = 0.0;
+	curr_time = 0.0;
+	
 	activeCores = malloc(sizeof(job_t) * cores);
 	for (int i = 0; i < numCores; i++){
 		activeCores[i] = 0;
@@ -205,6 +207,24 @@ int scheduler_job_finished(int core_id, int job_number, int time)
 {
 	update_time(time);
 	
+	job_t* finished_job = activeCores[core_id];
+	waiting_time += time - finished_job->running_time - finished_job->arrival_time;
+	response_time += finished_job->start_time - finished_job->arrival_time;
+	turnaround_time += time - finished_job->arrival_time;
+	
+	free(finished_job);
+	activeCores[core_id] = 0;
+	
+	if (queue.m_front != NULL){
+		job_t* job = priqueue_poll(&queue);
+		
+		if (job->start_time == -1){
+			job->start_time = time;
+		}
+		activeCores[core_id] = job;
+		return job->num;
+	}
+	
 	return -1;
 }
 
@@ -322,8 +342,8 @@ void scheduler_show_queue()
 void update_time(int time){
 	for (int i = 0; i < numCores; i++){
 		if (activeCores[i] != 0){
-			activeCores[i]->remaining_time -= time - currTime;
+			activeCores[i]->remaining_time -= time - curr_time;
 		}
 	}
-	currTime = time;
+	curr_time = time;
 }
